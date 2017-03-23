@@ -2,7 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/../via-compare/.idea/aviasales-task.iml" filepath="$PROJECT_DIR$/../via-compare/.idea/aviasales-task.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/aviasales-task.iml" filepath="$PROJECT_DIR$/.idea/aviasales-task.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/via-compare.iml" filepath="$PROJECT_DIR$/.idea/via-compare.iml" />
     </modules>
   </component>
 </project>

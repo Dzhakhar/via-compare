@@ -1,91 +1,77 @@
 import xml.etree.ElementTree as ET
 import hashlib
 
-first = {}  # RS_ViaOW.xml
-result = {}  # Result
-
-def compare(obj, hash, key, value):
-    obj['__hash__'] += hash
-    obj['__values__'][key] = value
-
-    global first
-    if first.get(hash, False):
-        obj['__values_mutated__'][key] = False
-    else:
-        obj['__is_changed__'] = True
-        obj['__values_mutated__'][key] = True
-
-    return obj
+first = {}
+results = []
 
 
-def iter(filename, is_first):
-    tree = ET.parse(filename)
-    root = tree.getroot()
+def compare_tickets(flights, nested_tag, i, is_first):
+    for j, _flights in enumerate(flights.find(nested_tag)):
+        # for <Flight/> in <Flights/>
+        for k, flight in enumerate(_flights):
+            payload = {}
+            payload['updated'] = {}
+            payload['properties'] = {}
 
-    for i, flights in enumerate(root.find('PricedItineraries')):
-        flight_wrapper = {}
-
-        if not is_first:
-            flight_wrapper['__is_changed__'] = False
-            flight_wrapper['__hash__'] = ''
-            flight_wrapper['__values_mutated__'] = {}
-            flight_wrapper['__values__'] = {}
-
-        if flights.find('OnwardPricedItinerary'):
-            for j, _flights in enumerate(flights.find('OnwardPricedItinerary')):
-                for k, flight in enumerate(_flights):
-                    # flight_wrapper['flight'] = flight
-
-                    for property in flight:
-                        # make hash address to have quick access to this property and compare
-                        key = str(i) + ':' + str(j) + ':' + str(k) + ':' + str(property.tag) + str(property.text)
-                        hash = hashlib.sha1(key.encode('utf-8')).hexdigest()
-
-                        if (is_first):
-                            # if this is the first iteration, push every property into `first` key:value store
-                            global first
-                            first[hash] = True
-                        else:
-                            flight_wrapper = compare(flight_wrapper, hash, str(property.tag), property.text)
-
-        if flights.find('ReturnPricedItinerary'):
-            for j, _flights in enumerate(flights.find('ReturnPricedItinerary')):
-                for k, flight in enumerate(_flights):
-
-                    for property in flight:
-                        # make hash address to have quick access to this property and compare
-                        key = str(i) + ':' + str(j) + ':' + str(k) + ':' + str(property.tag) + str(property.text)
-                        hash = hashlib.sha1(key.encode('utf-8')).hexdigest()
-
-                        if (is_first):
-                            # if this is the first iteration, push every property into `first` key:value store
-                            global first
-                            first[hash] = True
-                        else:
-                            flight_wrapper = compare(flight_wrapper, hash, str(property.tag), property.text)
-
-        if flights.find('Pricing'):
-            for j, service_charges in enumerate(flights.find('Pricing')):
-                item_key = service_charges.attrib['ChargeType'] + ':' + service_charges.attrib['type']
-
-                key = str(i) + str(j) + item_key
+            for property in flight:
+                # make hash address to have quick access to this property and compare
+                key = str(i) + ':' + str(j) + ':' + str(k) + ':' + str(property.tag) + str(property.text)
                 hash = hashlib.sha1(key.encode('utf-8')).hexdigest()
 
                 if is_first:
                     global first
                     first[hash] = True
                 else:
-                    flight_wrapper = compare(flight_wrapper, hash, item_key, service_charges.text)
+                    payload['properties'][str(property.tag)] = property.text
 
-        if not is_first and flight_wrapper['__is_changed__']:
-            flight_wrapper['__hash__'] = hashlib.sha1(flight_wrapper['__hash__'].encode('utf-8')).hexdigest()
-            result[flight_wrapper['__hash__']] = flight_wrapper
-
-
-iter('RS_ViaOW.xml', True)
-iter('RS_Via-3.xml', False)
+                    if first.get(hash, False):
+                        payload['updated'][str(property.tag)] = False
+                    else:
+                        payload['updated'][str(property.tag)] = True
+                        results.append(payload)
 
 
+def compare_pricing(flights, nested_tag, i, is_first):
+    for j, service_charges in enumerate(flights.find('Pricing')):
+        payload = {}
+        payload['updated'] = {}
+        payload['properties'] = {}
+        item_key = service_charges.attrib['ChargeType'] + ':' + service_charges.attrib[
+            'type'] + ':' + service_charges.text
+        key = str(i) + str(j) + item_key
+        hash = hashlib.sha1(key.encode('utf-8')).hexdigest()
+
+        if is_first:
+            global first
+            first[hash] = True
+        else:
+            payload['properties'][item_key] = service_charges.text
+
+            if first.get(hash, False):
+                payload['updated'][item_key] = False
+            else:
+                payload['updated'][item_key] = True
+                results.append(payload)
+
+
+def iter(filename, is_first):
+    tree = ET.parse(filename)
+    root = tree.getroot()
+
+    # for <Flights/> in <PricedItineraries>
+    for i, flights in enumerate(root.find('PricedItineraries')):
+        if flights.find('OnwardPricedItinerary'):
+            compare_tickets(flights, 'OnwardPricedItinerary', i, is_first)
+
+        if flights.find('ReturnPricedItinerary'):
+            compare_tickets(flights, 'ReturnPricedItinerary', i, is_first)
+
+        if flights.find('Pricing'):
+            compare_pricing(flights, 'Pricing', i, is_first)
+
+
+# colored output
+# updated values are printed green
 class bcolors:
     HEADER = '\033[95m'
     OKBLUE = '\033[94m'
@@ -97,7 +83,7 @@ class bcolors:
     UNDERLINE = '\033[4m'
 
 
-# здесь я уже сильно устал и написал не самую гибкую функцию, знаю =), на один раз пойдет, если бы я
+# здесь я уже устал и написал не самую гибкую функцию, знаю =), на один раз пойдет, если бы я
 # писал библиотеку или reusable функцию, то написал бы максимально гибко
 # тут минимум конфигурируемости
 def print_row(text1, text2):
@@ -115,7 +101,8 @@ def print_row(text1, text2):
             curr += len(text1[:50])
         elif text2 and curr == center + 2:
             res += text2[:50 - len(bcolors.ENDC)] + bcolors.ENDC
-            curr += len(text2.replace(bcolors.OKGREEN, '').replace(bcolors.ENDC, '')[:50 - (len(bcolors.ENDC * 2)) - 1])
+            curr += len(
+                text2.replace(bcolors.OKGREEN, '').replace(bcolors.ENDC, '')[:50 - (len(bcolors.ENDC * 2)) - 1])
         elif text1 or text2:
             res += ' '
             curr += 1
@@ -126,18 +113,32 @@ def print_row(text1, text2):
     print(res)
 
 
-for hash, flight in result.items():
-    print('\n')
-    print_row('', '')
-    print_row('Property', 'Value')
-    print_row('', '')
+def render():
+    # render output
+    global results
+    for flight in results:
+        print('\n')
+        print_row('', '')
+        print_row('Property', 'Value')
+        print_row('', '')
 
-    for key, value in flight['__values__'].items():
-        if flight['__values_mutated__'][key]:
-            if value:
-                print_row(key.lstrip(), bcolors.OKGREEN + value.lstrip() + bcolors.ENDC)
-                print_row('', '')
-        else:
-            if value:
-                print_row(key.lstrip(), value.lstrip())
-                print_row('', '')
+        for key, value in flight['properties'].items():
+            if flight['updated'][key]:
+                if value:
+                    global bcolors
+                    print_row(key.lstrip(), bcolors.OKGREEN + value.lstrip() + bcolors.ENDC)
+                    print_row('', '')
+            else:
+                if value:
+                    print_row(key.lstrip(), value.lstrip())
+                    print_row('', '')
+
+
+def run(old, new):
+    iter(old, True)
+    iter(new, False)
+    render()
+
+
+# run('RS_ViaOW.xml', 'RS_Via-3.xml')
+run('OLD-fake-data.xml', 'NEW-fake-data.xml')
