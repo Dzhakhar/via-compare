@@ -13,6 +13,7 @@ def compare_tickets(flights, nested_tag, i, is_first):
             payload = {}
             payload['updated'] = {}
             payload['properties'] = {}
+            payload['is_changed'] = False
 
             for property in flight:
                 # make hash address to have quick access to this property and compare
@@ -28,8 +29,11 @@ def compare_tickets(flights, nested_tag, i, is_first):
                     if first.get(hash, False):
                         payload['updated'][str(property.tag)] = False
                     else:
+                        payload['is_changed'] = True
                         payload['updated'][str(property.tag)] = True
-                        results.append(payload)
+
+            if payload['is_changed']:
+                results.append(payload)
 
 
 def compare_pricing(flights, nested_tag, i, is_first):
@@ -37,9 +41,10 @@ def compare_pricing(flights, nested_tag, i, is_first):
         payload = {}
         payload['updated'] = {}
         payload['properties'] = {}
+        payload['is_changed'] = False
         item_key = service_charges.attrib['ChargeType'] + ':' + service_charges.attrib[
-            'type'] + ':' + service_charges.text
-        key = str(i) + str(j) + item_key
+            'type']
+        key = str(i) + str(j) + item_key + service_charges.text
         hash = hashlib.sha1(key.encode('utf-8')).hexdigest()
 
         if is_first:
@@ -51,8 +56,11 @@ def compare_pricing(flights, nested_tag, i, is_first):
             if first.get(hash, False):
                 payload['updated'][item_key] = False
             else:
+                payload['is_changed'] = True
                 payload['updated'][item_key] = True
-                results.append(payload)
+
+        if payload['is_changed']:
+            results.append(payload)
 
 
 def iter(filename, is_first):

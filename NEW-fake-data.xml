@@ -22,13 +22,13 @@
                     </Flight>
                     <Flight>
                         <Carrier id="AI">AirIndia</Carrier>
-                        <FlightNumber>332</FlightNumber>
+                        <FlightNumber>333</FlightNumber>
                         <Source>DEL</Source>
                         <Destination>BKK</Destination>
                         <DepartureTimeStamp>2015-10-27T1325</DepartureTimeStamp>
                         <ArrivalTimeStamp>2015-10-27T1920</ArrivalTimeStamp>
-                        <Class>GRAMM</Class>
-                        <NumberOfStops>0</NumberOfStops>
+                        <Class>G</Class>
+                        <NumberOfStops>1</NumberOfStops>
                         <FareBasis>
                             2820303decf751-5511-447a-aeb1-810a6b10ad7d@@$255_DXB_DEL_996_9_00:05_$255_DEL_BKK_332_9_13:25__A2_1_1
                         </FareBasis>
@@ -43,7 +43,7 @@
                 <ServiceCharges type="SingleAdult" ChargeType="TotalAmount">382.70</ServiceCharges>
                 <ServiceCharges type="SingleChild" ChargeType="BaseFare">129.00</ServiceCharges>
                 <ServiceCharges type="SingleChild" ChargeType="AirlineTaxes">215.70</ServiceCharges>
-                <ServiceCharges type="SingleChild" ChargeType="TotalAmount">344.70</ServiceCharges>
+                <ServiceCharges type="SingleChild" ChargeType="TotalAmount">34412.70</ServiceCharges>
                 <ServiceCharges type="SingleInfant" ChargeType="BaseFare">20.00</ServiceCharges>
                 <ServiceCharges type="SingleInfant" ChargeType="TotalAmount">20.00</ServiceCharges>
             </Pricing>
