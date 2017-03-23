@@ -1,5 +1,6 @@
 import xml.etree.ElementTree as ET
 import hashlib
+import json
 
 first = {}
 results = []
@@ -142,3 +143,5 @@ def run(old, new):
 
 # run('RS_ViaOW.xml', 'RS_Via-3.xml')
 run('OLD-fake-data.xml', 'NEW-fake-data.xml')
+
+open('result.json', 'w').write(json.dumps(results))

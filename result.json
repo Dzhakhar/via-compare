@@ -1,0 +1,66 @@
+[
+  {
+    "properties": {
+      "ArrivalTimeStamp": "2015-10-27T0445",
+      "NumberOfStops": "0",
+      "WarningText": null,
+      "TicketType": "E",
+      "Class": "GRAMMasdasd",
+      "DepartureTimeStamp": "2015-10-27T0005",
+      "Carrier": "AirIndia",
+      "FareBasis": "\n                            2820303decf751-5511-447a-aeb1-810a6b10ad7d@@$255_DXB_DEL_996_9_00:05_$255_DEL_BKK_332_9_13:25__A2_1_1\n                        ",
+      "Destination": "DEL",
+      "Source": "DXB",
+      "FlightNumber": "996"
+    },
+    "updated": {
+      "ArrivalTimeStamp": false,
+      "NumberOfStops": false,
+      "WarningText": false,
+      "TicketType": false,
+      "Class": true,
+      "DepartureTimeStamp": false,
+      "Carrier": false,
+      "FareBasis": false,
+      "Destination": false,
+      "Source": false,
+      "FlightNumber": false
+    }
+  },
+  {
+    "properties": {
+      "ArrivalTimeStamp": "2015-10-27T1920",
+      "NumberOfStops": "0",
+      "WarningText": null,
+      "TicketType": "E",
+      "Class": "GRAMM",
+      "DepartureTimeStamp": "2015-10-27T1325",
+      "Carrier": "AirIndia",
+      "FareBasis": "\n                            2820303decf751-5511-447a-aeb1-810a6b10ad7d@@$255_DXB_DEL_996_9_00:05_$255_DEL_BKK_332_9_13:25__A2_1_1\n                        ",
+      "Destination": "BKK",
+      "Source": "DEL",
+      "FlightNumber": "332"
+    },
+    "updated": {
+      "ArrivalTimeStamp": false,
+      "NumberOfStops": false,
+      "WarningText": false,
+      "TicketType": false,
+      "Class": true,
+      "DepartureTimeStamp": false,
+      "Carrier": false,
+      "FareBasis": false,
+      "Destination": false,
+      "Source": false,
+      "FlightNumber": false
+    }
+  },
+  {
+    "properties": {
+      "AirlineTaxes:SingleAdult:21sa5.70": "21sa5.70"
+    },
+    "updated": {
+      "AirlineTaxes:SingleAdult:21sa5.70": true
+    }
+  }
+]
